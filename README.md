@@ -1,16 +1,5 @@
 # PlantDoc: A Dataset for Visual Plant Disease Detection
 
-[![License: CC BY 4.0](https://img.shields.io/badge/License-CC%20BY%204.0-green?logo=creativecommons&logoColor=white)](https://creativecommons.org/licenses/by/4.0/)
-[![Version](https://img.shields.io/badge/version-1.0.0-blue?logo=semver&logoColor=white)](https://github.com/your-repo/plant_doc_detection)
-[![GitHub stars](https://img.shields.io/github/stars/your-repo/plant_doc_detection?style=flat&logo=github&label=Stars&color=orange&labelColor=orange&logoColor=white)](https://github.com/your-repo/plant_doc_detection)
-[![GitHub forks](https://img.shields.io/github/forks/your-repo/plant_doc_detection?style=flat&logo=github&label=Forks&color=yellow&labelColor=yellow&logoColor=white)](https://github.com/your-repo/plant_doc_detection)
-[![GitHub watchers](https://img.shields.io/github/watchers/your-repo/plant_doc_detection?style=flat&logo=github&label=Watchers&color=cyan&labelColor=cyan&logoColor=white)](https://github.com/your-repo/plant_doc_detection)
-[![GitHub issues](https://img.shields.io/github/issues/your-repo/plant_doc_detection?style=flat&logo=github&label=Issues&color=red&labelColor=red&logoColor=white)](https://github.com/your-repo/plant_doc_detection/issues)
-[![GitHub pull requests](https://img.shields.io/github/issues-pr/your-repo/plant_doc_detection?style=flat&logo=github&label=PRs&color=lime&labelColor=lime&logoColor=white)](https://github.com/your-repo/plant_doc_detection/pulls)
-[![GitHub contributors](https://img.shields.io/github/contributors/your-repo/plant_doc_detection?style=flat&logo=github&label=Contributors&color=purple&labelColor=purple&logoColor=white)](https://github.com/your-repo/plant_doc_detection/graphs/contributors)
-[![GitHub last commit](https://img.shields.io/github/last-commit/your-repo/plant_doc_detection?style=flat&logo=github&label=Last%20Commit&color=gray&labelColor=gray&logoColor=white)](https://github.com/your-repo/plant_doc_detection/commits)
-[![DOI](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.xxxxx-indigo?logo=doi&logoColor=white)](https://doi.org/10.5281/zenodo.xxxxx)
-
 A dataset for visual plant disease detection containing 2,585 images across 13 plant species and 29 disease classes. This repository hosts the standardized structure and conversion scripts for the PlantDoc dataset.
 
 - **Project page**: `https://github.com/pratikkayal/PlantDoc-Dataset`
@@ -320,47 +309,5 @@ The dataset consists of:
 
 5. **Split distribution**: The validation set is created by splitting 20% from the original training set. The test set uses the original test split.
 
-## License
 
-This dataset is licensed under the Creative Commons Attribution 4.0 International License (CC BY 4.0).
-
-Check the original dataset terms and cite appropriately.
-
-See `LICENSE` file for full license text.
-
-## Citation
-
-If you use this dataset, please cite the original paper:
-
-```bibtex
-@inproceedings{10.1145/3371158.3371196,
-  author = {Singh, Davinder and Jain, Naman and Jain, Pranjali and Kayal, Pratik and Kumawat, Sudhakar and Batra, Nipun},
-  title = {PlantDoc: A Dataset for Visual Plant Disease Detection},
-  year = {2020},
-  isbn = {9781450377386},
-  publisher = {Association for Computing Machinery},
-  address = {New York, NY, USA},
-  url = {https://doi.org/10.1145/3371158.3371196},
-  doi = {10.1145/3371158.3371196},
-  booktitle = {Proceedings of the 7th ACM IKDD CoDS and 25th COMAD},
-  pages = {249–253},
-  numpages = {5},
-  keywords = {Deep Learning, Object Detection, Image Classification},
-  location = {Hyderabad, India},
-  series = {CoDS COMAD 2020}
-}
-```
-
-**Paper links**:
-- [Arxiv](https://arxiv.org/abs/1911.10317)
-- [ACM Digital Library](https://dl.acm.org/doi/10.1145/3371158.3371196)
-
-## Changelog
-
-- **V1.0.0** (2025): Initial standardized structure and COCO conversion utility
-
-## Contact
-
-- **Maintainers**: Open to contributions via issue tracker
-- **Original authors**: Davinder Singh, Naman Jain, Pranjali Jain, Pratik Kayal, Sudhakar Kumawat, Nipun Batra
-- **Source**: `https://github.com/pratikkayal/PlantDoc-Dataset`
+ps://github.com/pratikkayal/PlantDoc-Dataset`
