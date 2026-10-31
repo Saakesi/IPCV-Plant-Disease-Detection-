@@ -1,313 +1,333 @@
-# PlantDoc: A Dataset for Visual Plant Disease Detection
+# 🌿 Plant Disease Detection Using YOLOv8
 
-A dataset for visual plant disease detection containing 2,585 images across 13 plant species and 29 disease classes. This repository hosts the standardized structure and conversion scripts for the PlantDoc dataset.
+## 1. Project Overview
 
-- **Project page**: `https://github.com/pratikkayal/PlantDoc-Dataset`
-- **Original paper**: `https://arxiv.org/abs/1911.10317`
-- **Dataset repository**: `https://github.com/pratikkayal/PlantDoc-Dataset`
+Plant Disease Detection is a computer vision project that detects plant diseases from leaf images using the YOLOv8 object detection model.
 
-## TL;DR
+The system identifies diseased regions in an image, predicts the corresponding disease class, and draws bounding boxes around the detected regions.
 
-- **Task**: Object Detection, Image Classification
-- **Modality**: RGB
-- **Platform**: Ground
-- **Real/Synthetic**: Real
-- **Images**: 2,585 labeled images
-- **Classes**: 29 disease classes across 13 plant species
-  - Plant species: Apple, Bell Pepper, Blueberry, Cherry, Corn, Grape, Peach, Potato, Raspberry, Soyabean, Squash, Strawberry, Tomato
-  - Disease classes: Including healthy leaves and various disease conditions
-- **Resolution**: Variable (ranging from ~300×200 to ~2800×2100 pixels)
-- **Annotations**: Bounding boxes in CSV format (converted to COCO format)
-- **Total annotations**: 8,600 bounding boxes
-- **License**: CC BY 4.0 (see LICENSE)
-- **Citation**: See below
+The project uses the **PlantDoc dataset** and applies transfer learning with the pretrained YOLOv8 Nano (`yolov8n.pt`) model.
 
-## Table of Contents
+## 2. Objectives
 
-- [Download](#download)
-- [Dataset Structure](#dataset-structure)
-- [Sample Images](#sample-images)
-- [Annotation Schema](#annotation-schema)
-- [Stats and Splits](#stats-and-splits)
-- [Quick Start](#quick-start)
-- [Evaluation and Baselines](#evaluation-and-baselines)
-- [Datasheet (Data Card)](#datasheet-data-card)
-- [Known Issues and Caveats](#known-issues-and-caveats)
-- [License](#license)
-- [Citation](#citation)
-- [Changelog](#changelog)
-- [Contact](#contact)
+- Detect diseases in plant leaf images.
+- Identify the disease category of detected regions.
+- Localize diseased regions using bounding boxes.
+- Train an object detection model using a custom dataset.
+- Evaluate model performance using precision, recall, and mAP.
 
-## Download
+## 3. Technologies Used
 
-- **Original dataset**: `https://github.com/pratikkayal/PlantDoc-Dataset`
-- **This repository**: Hosts structure and conversion scripts only; place the downloaded folders under this directory.
-- **Local license file**: See `LICENSE` (CC BY 4.0).
+- **Python** – Programming language
+- **YOLOv8 (Ultralytics)** – Object detection model
+- **PyTorch** – Deep learning framework
+- **OpenCV** – Image processing
+- **Pandas** – Dataset and annotation handling
+- **NumPy** – Numerical operations
+- **Pillow** – Image processing
+- **Apple Metal (MPS)** – Hardware acceleration on Apple Silicon
 
-## Dataset Structure
+## 4. Dataset
 
+The project uses the **PlantDoc dataset**, which contains images of healthy and diseased plant leaves.
+
+| Dataset Property | Details |
+|---|---|
+| Original dataset images | 2,585 |
+| Classes | 29 |
+| Plant species | 13 |
+| Total annotations | 8,600 |
+| Training images | 1,800 |
+| Validation images | 450 |
+| Testing images | 231 |
+
+**Note:** The prepared train, validation, and test splits contain 2,481 images in total. This differs from the original dataset count of 2,585 images.
+
+### Dataset Classes
+
+The dataset contains 29 classes, including:
+
+- Apple Scab Leaf
+- Apple Leaf
+- Apple Rust Leaf
+- Bell Pepper Leaf
+- Bell Pepper Leaf Spot
+- Blueberry Leaf
+- Cherry Leaf
+- Corn Gray Leaf Spot
+- Corn Leaf Blight
+- Corn Rust Leaf
+- Peach Leaf
+- Potato Leaf
+- Potato Leaf Early Blight
+- Potato Leaf Late Blight
+- Raspberry Leaf
+- Soyabean Leaf
+- Squash Powdery Mildew Leaf
+- Strawberry Leaf
+- Tomato Early Blight Leaf
+- Tomato Septoria Leaf Spot
+- Tomato Leaf
+- Tomato Leaf Bacterial Spot
+- Tomato Leaf Late Blight
+- Tomato Leaf Mosaic Virus
+- Tomato Leaf Yellow Virus
+- Tomato Mold Leaf
+- Tomato Two Spotted Spider Mites Leaf
+- Grape Leaf
+- Grape Leaf Black Rot
+
+## 5. Project Workflow
+
+1. **Dataset Collection:** Collected plant leaf images from the PlantDoc dataset.
+2. **Dataset Organization:** Organized images and their corresponding annotations.
+3. **Annotation Processing:** Processed the original CSV annotations.
+4. **COCO Conversion:** Converted annotations into COCO JSON format.
+5. **YOLO Conversion:** Converted COCO bounding boxes into YOLO annotation format.
+6. **Dataset Splitting:** Prepared training, validation, and testing datasets.
+7. **Model Selection:** Selected the pretrained YOLOv8 Nano model.
+8. **Transfer Learning:** Fine-tuned the pretrained model on the PlantDoc dataset.
+9. **Model Evaluation:** Evaluated the model using validation metrics.
+10. **Prediction:** Used the trained model to detect diseases in new leaf images.
+
+## 6. Dataset Preprocessing
+
+The original dataset annotations were converted into formats suitable for YOLOv8 training.
+
+### Annotation Conversion Pipeline
+
+```text
+Original PlantDoc Dataset
+          |
+          v
+     CSV Annotations
+          |
+          v
+      COCO JSON
+          |
+          v
+      YOLO Format
+          |
+          v
+    Model Training
 ```
-PlantDoc-Object-Detection-Dataset-master/
-├── plant_diseases/                 # Main category directory
-│   ├── csv/                        # Per-image CSV annotation files
-│   ├── images/                     # Image files (JPG/JPEG/PNG)
-│   ├── labelmap.json              # Label mapping file
-│   └── sets/                       # Dataset split files
-│       ├── train.txt              # Training set image list
-│       ├── val.txt                # Validation set image list
-│       ├── test.txt               # Test set image list
-│       ├── all.txt                # All images list
-│       └── train_val.txt          # Train+Val combined list
+
+### YOLO Annotation Format
+
+YOLO uses the following annotation format:
+
+```text
+class_id x_center y_center width height
+```
+
+All bounding box coordinates are normalized between 0 and 1.
+
+- `class_id` – Numeric ID representing the disease class.
+- `x_center` – Normalized horizontal center of the bounding box.
+- `y_center` – Normalized vertical center of the bounding box.
+- `width` – Normalized bounding box width.
+- `height` – Normalized bounding box height.
+
+## 7. Model Architecture
+
+The project uses **YOLOv8 Nano (YOLOv8n)**, a lightweight object detection model.
+
+YOLOv8 follows a CNN-based architecture consisting of three major components:
+
+### 1. Backbone
+
+- Extracts important visual features from input images.
+- Learns patterns such as edges, textures, shapes, and disease spots.
+
+### 2. Neck
+
+- Combines features from different image scales.
+- Helps detect objects of different sizes.
+
+### 3. Detection Head
+
+- Predicts bounding box coordinates.
+- Predicts class probabilities.
+- Produces the final disease detection results.
+
+### Model Selection
+
+- Model: YOLOv8 Nano
+- Pretrained weights: `yolov8n.pt`
+- Task: Object Detection
+- Input image size: 416 × 416
+- Number of classes: 29
+
+## 8. Model Training
+
+Transfer learning was used to train the model.
+
+Instead of training the entire network from scratch, the project starts with pretrained YOLOv8 weights and fine-tunes the model on the PlantDoc dataset.
+
+### Training Configuration
+
+| Parameter | Value |
+|---|---|
+| Model | YOLOv8n |
+| Epochs | 30 |
+| Image Size | 416 × 416 |
+| Batch Size | 4 |
+| Device | MPS |
+| Dataset | PlantDoc |
+| Task | Object Detection |
+
+### Training Command
+
+```bash
+.venv/bin/yolo detect train \
+  model=yolov8n.pt \
+  data=plantdoc_yolo/data.yaml \
+  epochs=30 \
+  imgsz=416 \
+  batch=4 \
+  device=mps \
+  workers=0
+```
+
+### Training Process
+
+During training:
+
+1. Images are loaded in batches.
+2. The model extracts image features.
+3. The detection head predicts bounding boxes and classes.
+4. Predictions are compared with the actual annotations.
+5. The loss is calculated.
+6. Backpropagation calculates gradients.
+7. The optimizer updates model weights.
+8. The process repeats for the specified number of epochs.
+
+### Loss Functions
+
+YOLOv8 uses multiple loss components:
+
+- **Box Loss:** Measures the difference between predicted and actual bounding boxes.
+- **Classification Loss:** Measures errors in predicted disease classes.
+- **Distribution Focal Loss (DFL):** Helps improve bounding box localization.
+
+## 9. Model Evaluation
+
+The model was evaluated using the validation dataset.
+
+### Validation Results
+
+| Metric | Score |
+|---|---:|
+| Precision | 0.792 |
+| Recall | 0.675 |
+| mAP@50 | 0.751 |
+| mAP@50–95 | 0.541 |
+
+### Evaluation Metrics Explained
+
+- **Precision:** Measures how many predicted detections are correct.
+- **Recall:** Measures how many actual objects are successfully detected.
+- **mAP@50:** Mean Average Precision calculated using an Intersection over Union (IoU) threshold of 0.50.
+- **mAP@50–95:** Evaluates detection performance across IoU thresholds from 0.50 to 0.95.
+
+## 10. Model Prediction
+
+The trained model can be used to detect diseases in new plant leaf images.
+
+### Prediction Command
+
+```bash
+.venv/bin/yolo detect predict \
+  model=runs/detect/train/weights/best.pt \
+  source=path/to/leaf_image.jpg \
+  imgsz=416 \
+  conf=0.25 \
+  save=True
+```
+
+### Prediction Parameters
+
+- `model` – Path to the trained model weights.
+- `source` – Input image or video.
+- `imgsz` – Input image size.
+- `conf` – Minimum confidence threshold for detections.
+- `save=True` – Saves the output image with detected bounding boxes.
+
+### Model Weights
+
+- `best.pt` – Model checkpoint with the best validation performance.
+- `last.pt` – Model checkpoint saved at the end of training.
+
+## 11. Project Structure
+
+```text
+Plant-Disease-Detection/
 │
-├── annotations/                    # COCO format JSON files (generated)
+├── plant_diseases/
+│   ├── images/
+│   ├── csv/
+│   ├── labelmap.json
+│   └── sets/
+│       ├── train.txt
+│       ├── val.txt
+│       ├── test.txt
+│       ├── all.txt
+│       └── train_val.txt
+│
+├── annotations/
 │   ├── plant_diseases_instances_train.json
 │   ├── plant_diseases_instances_val.json
 │   └── plant_diseases_instances_test.json
 │
-├── scripts/                        # Conversion and utility scripts
-│   ├── convert_to_coco.py         # CSV to COCO format converter
-│   ├── reorganize_dataset.py      # Dataset reorganization script
-│   └── update_csv_labels.py       # CSV label update script
+├── scripts/
+│   ├── convert_to_coco.py
+│   ├── reorganize_dataset.py
+│   └── update_csv_labels.py
 │
-├── data/                           # Original data directory
-│   └── origin/                     # Original dataset files (preserved)
-│       ├── TRAIN/                  # Original training images
-│       ├── TEST/                   # Original test images
-│       ├── train_labels.csv        # Original training labels
-│       ├── test_labels.csv         # Original test labels
-│       └── LICENSE.txt             # Original license file
+├── plantdoc_yolo/
+│   ├── images/
+│   ├── labels/
+│   └── data.yaml
 │
-├── LICENSE                         # License file
-├── README.md                       # This file
-└── requirements.txt                # Python dependencies
+├── runs/
+│   └── detect/
+│       └── train/
+│           └── weights/
+│               ├── best.pt
+│               └── last.pt
+│
+├── requirements.txt
+└── README.md
 ```
 
-**Splits files format**: Each file in `sets/` contains image basenames (no extension), one per line. If missing, all images are used.
+## 12. Limitations
 
-## Sample Images
+- The model's validation performance is moderate.
+- Similar-looking plant diseases can be difficult to distinguish.
+- Performance depends on image quality, lighting, and dataset diversity.
+- The model may struggle with leaf images containing complex backgrounds.
+- More training data and hyperparameter tuning may improve performance.
 
-<table>
-  <tr>
-    <th>Category</th>
-    <th>Sample</th>
-  </tr>
-  <tr>
-    <td><strong>Apple Leaf</strong></td>
-    <td>
-      <img src="plant_diseases/images/apple_F14b.jpg" alt="Apple leaf" width="260"/>
-      <div align="center"><code>plant_diseases/images/apple_F14b.jpg</code></div>
-    </td>
-  </tr>
-  <tr>
-    <td><strong>Tomato Leaf</strong></td>
-    <td>
-      <img src="plant_diseases/images/IMG_20150511_095517.jpg" alt="Tomato leaf" width="260"/>
-      <div align="center"><code>plant_diseases/images/IMG_20150511_095517.jpg</code></div>
-    </td>
-  </tr>
-  <tr>
-    <td><strong>Potato Leaf Blight</strong></td>
-    <td>
-      <img src="plant_diseases/images/20100816earlyblight.jpg" alt="Potato early blight" width="260"/>
-      <div align="center"><code>plant_diseases/images/20100816earlyblight.jpg</code></div>
-    </td>
-  </tr>
-</table>
+## 13. Future Improvements
 
-## Annotation Schema
+- Increase the size and diversity of the training dataset.
+- Experiment with larger YOLOv8 models.
+- Perform data augmentation to improve generalization.
+- Tune learning rate, batch size, and other hyperparameters.
+- Evaluate performance on additional unseen plant images.
+- Develop a web-based interface for uploading leaf images and displaying predictions.
 
-- **CSV per-image schema** (stored under `plant_diseases/csv/` folder):
-  - Columns: `#item, x, y, width, height, label`
-  - Coordinates: `x, y` are top-left corner coordinates in pixels
-  - Dimensions: `width, height` are bounding box dimensions in pixels
-  - Label: Integer label ID corresponding to `labelmap.json`
-  
-- **COCO-style** (generated):
+## 14. Conclusion
 
-```json
-{
-  "info": {
-    "year": 2020,
-    "version": "1.0.0",
-    "description": "PlantDoc plant_diseases train split"
-  },
-  "images": [
-    {
-      "id": 1,
-      "file_name": "plant_diseases/images/example.jpg",
-      "width": 800,
-      "height": 600
-    }
-  ],
-  "annotations": [
-    {
-      "id": 1,
-      "image_id": 1,
-      "category_id": 1,
-      "bbox": [107.37, 48.42, 22.0, 22.0],
-      "area": 484.0,
-      "iscrowd": 0
-    }
-  ],
-  "categories": [
-    {
-      "id": 1,
-      "name": "apple_scab_leaf",
-      "supercategory": "plant_disease"
-    }
-  ]
-}
-```
+This project demonstrates the application of deep learning and computer vision for automated plant disease detection.
 
-- **Label maps**: `plant_diseases/labelmap.json` defines the category mapping:
+Using YOLOv8 and transfer learning, the system detects diseased regions in plant leaf images and classifies them into disease categories.
 
-```json
-[
-  {
-    "object_id": 0,
-    "label_id": 0,
-    "keyboard_shortcut": "0",
-    "object_name": "background"
-  },
-  {
-    "object_id": 1,
-    "label_id": 1,
-    "keyboard_shortcut": "1",
-    "object_name": "apple_scab_leaf"
-  }
-]
-```
+The project also demonstrates the complete object detection pipeline, including dataset preprocessing, annotation conversion, model training, validation, and prediction.
 
-**All 29 classes**: Apple Scab Leaf, Apple Leaf, Apple Rust Leaf, Bell Pepper Leaf, Bell Pepper Leaf Spot, Blueberry Leaf, Cherry Leaf, Corn Gray Leaf Spot, Corn Leaf Blight, Corn Rust Leaf, Peach Leaf, Potato Leaf, Potato Leaf Early Blight, Potato Leaf Late Blight, Raspberry Leaf, Soyabean Leaf, Squash Powdery Mildew Leaf, Strawberry Leaf, Tomato Early Blight Leaf, Tomato Septoria Leaf Spot, Tomato Leaf, Tomato Leaf Bacterial Spot, Tomato Leaf Late Blight, Tomato Leaf Mosaic Virus, Tomato Leaf Yellow Virus, Tomato Mold Leaf, Tomato Two Spotted Spider Mites Leaf, Grape Leaf, Grape Leaf Black Rot.
+## 15. References
 
-## Stats and Splits
-
-### Image Statistics
-
-- **Total images**: 2,585
-- **Total annotations**: 8,600
-- **Number of classes**: 29
-- **Plant species**: 13 (Apple, Bell Pepper, Blueberry, Cherry, Corn, Grape, Peach, Potato, Raspberry, Soyabean, Squash, Strawberry, Tomato)
-
-### Dataset Splits
-
-Splits provided via `plant_diseases/sets/*.txt`. You may define your own splits by editing those files.
-
-| Split | Images | Annotations |
-|-------|--------|-------------|
-| Train | 1,800  | 6,449       |
-| Val   | 450    | 1,704       |
-| Test  | 231    | 447         |
-| **Total** | **2,481** | **8,600** |
-
-*Note: Some images from the original dataset may not have corresponding image files due to URL encoding issues in filenames.*
-
-## Quick Start
-
-### Using COCO API
-
-```python
-from pycocotools.coco import COCO
-import json
-
-# Load COCO annotations
-coco = COCO('annotations/plant_diseases_instances_train.json')
-
-# Get all image IDs
-img_ids = coco.getImgIds()
-print(f"Total images: {len(img_ids)}")
-
-# Get annotations for an image
-ann_ids = coco.getAnnIds(imgIds=img_ids[0])
-anns = coco.loadAnns(ann_ids)
-
-# Get category information
-cats = coco.loadCats(coco.getCatIds())
-print(f"Categories: {[cat['name'] for cat in cats]}")
-
-# Load image info
-img_info = coco.loadImgs(img_ids[0])[0]
-print(f"Image: {img_info['file_name']}")
-print(f"Size: {img_info['width']}x{img_info['height']}")
-print(f"Annotations: {len(anns)}")
-```
-
-### Converting to COCO format
-
-If you need to regenerate COCO annotations from CSV files:
-
-```bash
-python scripts/convert_to_coco.py --root . --out annotations --splits train val test
-```
-
-### Dependencies
-
-**Required**:
-- `Pillow>=9.5` (for image processing)
-
-**Optional**:
-- `pycocotools>=2.0.7` (for COCO API)
-
-Install with:
-```bash
-pip install -r requirements.txt
-```
-
-## Evaluation and Baselines
-
-- **Primary metric**: 
-  - Object Detection: mAP@[.50:.95], mAP@.50, mAP@.75
-  - Classification: Accuracy
-- **Baseline results**: According to the original paper, using this dataset can increase classification accuracy by up to 31% compared to baseline methods.
-
-## Datasheet (Data Card)
-
-### Motivation
-
-India loses 35% of the annual crop yield due to plant diseases. Early detection of plant diseases remains difficult due to the lack of lab infrastructure and expertise. This dataset was created to enable computer vision approaches for scalable and early plant disease detection, which is crucial for improving crop yield and food security.
-
-### Composition
-
-The dataset consists of:
-- **Image types**: RGB images collected from internet sources
-- **Categories**: 29 disease classes across 13 plant species (Apple, Bell Pepper, Blueberry, Cherry, Corn, Grape, Peach, Potato, Raspberry, Soyabean, Squash, Strawberry, Tomato)
-- **Annotation format**: Bounding box annotations for disease regions
-
-### Collection Process
-
-- **Source**: Images scraped from the internet
-- **Annotation tool**: Images manually annotated by experts
-- **Validation**: Annotation process involved approximately 300 human hours of effort
-
-### Preprocessing
-
-- Images provided in their original formats (JPG, JPEG, PNG)
-- Annotations converted from original format (xmin, ymin, xmax, ymax) to standard format (x, y, width, height)
-- Dataset reorganized into standardized structure following best practices
-
-### Distribution
-
-- Dataset is distributed under CC BY 4.0 license
-- Original dataset available at `https://github.com/pratikkayal/PlantDoc-Dataset`
-- This repository provides standardized structure and conversion scripts
-
-### Maintenance
-
-- Dataset structure has been standardized according to the dataset structure specification
-- COCO format annotations are generated from CSV files using the provided conversion script
-- This standardized version is maintained separately from the original dataset
-
-## Known Issues and Caveats
-
-1. **File naming**: Some images from the original CSV files may not have corresponding image files due to URL-encoded filenames or query parameters in the original filenames.
-
-2. **Image formats**: The dataset contains images in JPG, JPEG, and PNG formats. All formats are supported by the conversion scripts.
-
-3. **Coordinate system**: Bounding boxes use top-left corner origin (x, y) with width and height in pixels.
-
-4. **Class variations**: Some class names may have slight variations (e.g., "Bell_pepper leaf" vs "bell_pepper_leaf"). The conversion scripts handle these variations automatically.
-
-5. **Split distribution**: The validation set is created by splitting 20% from the original training set. The test set uses the original test split.
-
-
-ps://github.com/pratikkayal/PlantDoc-Dataset`
+- [Ultralytics YOLO Documentation](https://docs.ultralytics.com/)
+- [PlantDoc Dataset](https://github.com/pratikkayal/PlantDoc-Dataset)
+- [PyTorch Documentation](https://pytorch.org/docs/stable/index.html)
+- [OpenCV Documentation](https://docs.opencv.org/)
